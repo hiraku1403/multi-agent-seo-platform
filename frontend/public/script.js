@@ -12,7 +12,7 @@ document.getElementById('generateBtn').addEventListener('click', async () => {
     document.getElementById('generateBtn').disabled = true;
     
     try {
-        // 🔥 CORREÇÃO: Remover /api/ do caminho
+        // 🔥 CORREÇÃO: Remover /api/ do caminho 1
         const response = await fetch('/generate-content', {
             method: 'POST', 
             headers: {
