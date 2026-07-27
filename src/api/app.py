@@ -1,15 +1,18 @@
 import os
-# CONFIGURAÇÃO DE PASTAS DE CACHE E DIRETÓRIO HOME PERMITIDO NA VERCEL
+# CONFIGURAÇÃO DE PASTAS DE CACHE E MODELO GLOBAL
 os.environ["CREWAI_STORAGE_DIR"] = "/tmp/crewai"
 os.environ["XDG_DATA_HOME"] = "/tmp/.local/share"
 os.environ["XDG_CACHE_HOME"] = "/tmp/.cache"
 os.environ["XDG_CONFIG_HOME"] = "/tmp/.config"
-os.environ["HOME"] = "/tmp"  # Resolve definitivamente o erro Read-only file system
+os.environ["HOME"] = "/tmp"  
 os.environ["NUMEXPR_MAX_THREADS"] = "1"
 
-
-# FORÇA O CREWAI E O LITELLM A USARE M O MODELO CORRETO MODERNO
+# CONFIGURAÇÃO DO GEMINI
 os.environ["OPENAI_MODEL_NAME"] = "gemini/gemini-1.5-flash"
+
+# CHAVE FALSA PARA ENGANAR A VALIDAÇÃO DO CREWAI (RESOLVE O SEU ERRO)
+os.environ["OPENAI_API_KEY"] = "fake-key-just-to-bypass-validation"
+
 
 
 from fastapi import FastAPI, HTTPException, BackgroundTasks
