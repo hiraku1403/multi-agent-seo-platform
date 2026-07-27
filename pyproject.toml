@@ -4,6 +4,9 @@ version = "0.1.0"
 description = "Plataforma de SEO Multi-Agente"
 requires-python = ">=3.12"
 dependencies = [
+    
+    "google-auth>=2.20.0",
+    "google-generativeai>=0.4.0"
     "crewai>=0.28.0",
     "langchain>=0.1.16",
     "langchain-openai>=0.1.0",
