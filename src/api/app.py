@@ -7,8 +7,9 @@ os.environ["XDG_CONFIG_HOME"] = "/tmp/.config"
 os.environ["HOME"] = "/tmp"  # Resolve definitivamente o erro Read-only file system
 os.environ["NUMEXPR_MAX_THREADS"] = "1"
 
-# REMOVIDO: A linha os.environ["OPENAI_API_BASE"] foi excluída para o LiteLLM usar o padrão correto nativo.
 
+# FORÇA O CREWAI E O LITELLM A USARE M O MODELO CORRETO MODERNO
+os.environ["OPENAI_MODEL_NAME"] = "gpt-4o-mini"
 
 
 from fastapi import FastAPI, HTTPException, BackgroundTasks

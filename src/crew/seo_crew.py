@@ -18,17 +18,11 @@ from crewai import LLM
 
 class SEOCrew:
     def __init__(self):
-        # Cria a configuração do modelo de forma explícita
-        self.openai_llm = LLM(
-            model="openai/gpt-4o-mini",
-            temperature=0.7
-        )
-        
-        # Passa a configuração para a criação de cada agente
-        self.researcher = ResearcherAgent().create_agent(llm=self.openai_llm)
-        self.seo_analyst = SEOAnalystAgent().create_agent(llm=self.openai_llm)
-        self.writer = WriterAgent().create_agent(llm=self.openai_llm)
-        self.editor = EditorAgent().create_agent(llm=self.openai_llm)
+        # Volte a inicialização ao formato original sem passar o argumento 'llm'
+        self.researcher = ResearcherAgent().create_agent()
+        self.seo_analyst = SEOAnalystAgent().create_agent()
+        self.writer = WriterAgent().create_agent()
+        self.editor = EditorAgent().create_agent()
 
     
     async def run_seo_workflow(self, topic: str) -> Dict[str, Any]:
