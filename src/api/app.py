@@ -74,25 +74,27 @@ async def generate_content(request: SEORequest, background_tasks: BackgroundTask
     background_tasks.add_task(run_crew_in_background, job_id, request.topic)
     return {"job_id": job_id, "status": "processing"}
 
-@app.get("/api/job/{job_id}", response_model=SEOResponse)
+@app.get("/api/job/{job_id}")
 async def get_job_status(job_id: str):
     if job_id not in jobs:
         raise HTTPException(status_code=404, detail="Trabalho não encontrado")
     
     job_data = jobs[job_id]
     if job_data.get("status") == "processing":
-        return SEOResponse(success=False, status="processing", topic=job_data["topic"])
+        return {"success": False, "status": "processing", "topic": job_data["topic"]}
         
-    return SEOResponse(
-        success=job_data.get("success", False),
-        status="completed",
-        topic=job_data.get("topic"),
-        research=job_data.get("research"),
-        seo_analysis=job_data.get("seo_analysis"),
-        article=job_data.get("article"),
-        final_article=job_data.get("final_article"),
-        error=job_data.get("error")
-    )
+    # Retorna o dicionário de dados bruto direto para o frontend, convertendo tudo para string por segurança
+    return {
+        "success": bool(job_data.get("success", False)),
+        "status": "completed",
+        "topic": str(job_data.get("topic", "")),
+        "research": str(job_data.get("research", "")),
+        "seo_analysis": str(job_data.get("seo_analysis", "")),
+        "article": str(job_data.get("article", "")),
+        "final_article": str(job_data.get("final_article", "")),
+        "error": str(job_data.get("error", "")) if job_data.get("error") else None
+    }
+
 
 @app.get("/api/health")
 async def health_check():
