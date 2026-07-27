@@ -1,29 +1,21 @@
 import os
-# FORÇA O CREWAI A USAR A PASTA TEMPORÁRIA COM PERMISSÃO DE ESCRITA DA VERCEL
 os.environ["CREWAI_STORAGE_DIR"] = "/tmp/crewai"
 os.environ["XDG_DATA_HOME"] = "/tmp/.local/share"
 os.environ["XDG_CACHE_HOME"] = "/tmp/.cache"
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
-from fastapi.responses import HTMLResponse
-from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from src.crew.seo_crew import SEOCrew
 import asyncio
-import uvicorn
+import os
 from dotenv import load_dotenv
-
 
 load_dotenv()
 
-
-
-
 app = FastAPI(title="Multi-Agent SEO Platform", version="1.0.0")
 
-# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -32,11 +24,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Banco de dados temporário em memória para salvar os resultados
+jobs = {}
+
 class SEORequest(BaseModel):
     topic: str
 
 class SEOResponse(BaseModel):
     success: bool
+    status: str
     topic: str
     research: str = None
     seo_analysis: str = None
@@ -44,50 +40,57 @@ class SEOResponse(BaseModel):
     final_article: str = None
     error: str = None
 
-    # Encontra a pasta static ao lado da pasta api
-current_dir = os.path.dirname(os.path.abspath(__file__)) # src/api
-project_root = os.path.dirname(os.path.dirname(current_dir)) # Raiz
-static_dir = os.path.join(project_root, "src", "static")
+# Função que rodará em segundo plano sem travar a requisição
+async def run_crew_in_background(job_id: str, topic: str):
+    try:
+        crew = SEOCrew()
+        result = await crew.run_seo_workflow(topic)
+        jobs[job_id] = result
+    except Exception as e:
+        jobs[job_id] = {"success": False, "error": str(e), "topic": topic}
 
-if os.path.exists(static_dir):
-    app.mount("/static", StaticFiles(directory=static_dir), name="static")
-
-@app.get("/", response_class=HTMLResponse)
+@app.get("/")
 async def root():
     current_dir = os.path.dirname(os.path.abspath(__file__))
     project_root = os.path.dirname(os.path.dirname(current_dir))
-    html_path = os.path.join(project_root, "src", "static", "index.html")
-    
-    with open(html_path, "r", encoding="utf-8") as f:
-        return HTMLResponse(content=f.read())
+    html_path = os.path.join(project_root, "frontend", "public", "index.html")
+    if os.path.exists(html_path):
+        return FileResponse(html_path)
+    return {"message": "🚀 Multi-Agent SEO Platform API", "status": "online"}
 
-@app.post("/api/generate-content", response_model=SEOResponse)
-async def generate_content(request: SEORequest):
-    """
-    Gera conteúdo otimizado para SEO usando sistema multi-agente
-    """
-    try:
-        crew = SEOCrew()
-        result = await crew.run_seo_workflow(request.topic)
+@app.post("/api/generate-content")
+async def generate_content(request: SEORequest, background_tasks: BackgroundTasks):
+    # Cria um ID único usando o próprio tópico limpo
+    job_id = "".join(e for e in request.topic if e.isalnum()).lower()
+    
+    # Inicializa o status do Job
+    jobs[job_id] = {"success": False, "status": "processing", "topic": request.topic}
+    
+    # Dispara os agentes em segundo plano e libera a requisição HTTP imediatamente
+    background_tasks.add_task(run_crew_in_background, job_id, request.topic)
+    
+    return {"job_id": job_id, "status": "processing"}
+
+@app.get("/api/job/{job_id}", response_model=SEOResponse)
+async def get_job_status(job_id: str):
+    if job_id not in jobs:
+        raise HTTPException(status_code=404, detail="Trabalho não encontrado")
+    
+    job_data = jobs[job_id]
+    if job_data.get("status") == "processing":
+        return SEOResponse(success=False, status="processing", topic=job_data["topic"])
         
-        if result["success"]:
-            return SEOResponse(
-                success=True,
-                topic=result["topic"],
-                research=result.get("research"),
-                seo_analysis=result.get("seo_analysis"),
-                article=result.get("article"),
-                final_article=result.get("final_article")
-            )
-        else:
-            raise HTTPException(status_code=500, detail=result.get("error", "Erro desconhecido"))
-            
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    return SEOResponse(
+        success=job_data.get("success", False),
+        status="completed",
+        topic=job_data.get("topic"),
+        research=job_data.get("research"),
+        seo_analysis=job_data.get("seo_analysis"),
+        article=job_data.get("article"),
+        final_article=job_data.get("final_article"),
+        error=job_data.get("error")
+    )
 
 @app.get("/api/health")
 async def health_check():
     return {"status": "healthy"}
-
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
