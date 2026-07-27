@@ -1,15 +1,4 @@
 {
   "$schema": "https://vercel.sh",
-  "framework": "fastapi",
-  "cleanUrls": true,
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "src/api/app.py"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "frontend/public/$1"
-    }
-  ]
+  "framework": "fastapi"
 }

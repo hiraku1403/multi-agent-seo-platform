@@ -1,4 +1,5 @@
 import os
+
 # FORÇA O CREWAI A USAR A PASTA TEMPORÁRIA COM PERMISSÃO DE ESCRITA DA VERCEL
 os.environ["CREWAI_STORAGE_DIR"] = "/tmp/crewai"
 os.environ["XDG_DATA_HOME"] = "/tmp/.local/share"
@@ -6,6 +7,7 @@ os.environ["XDG_CACHE_HOME"] = "/tmp/.cache"
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from src.crew.seo_crew import SEOCrew
 import asyncio
@@ -41,7 +43,11 @@ class SEOResponse(BaseModel):
 
 @app.get("/")
 async def root():
-    return {"message": "🚀 Multi-Agent SEO Platform API", "status": "online"}
+    # Caminho correto considerando a estrutura a partir da raiz do projeto
+    html_path = os.path.join(os.getcwd(), "frontend", "public", "index.html")
+    if os.path.exists(html_path):
+        return FileResponse(html_path)
+    return {"message": "🚀 Multi-Agent SEO Platform API", "status": "online", "info": "index.html nao encontrado"}
 
 @app.post("/api/generate-content", response_model=SEOResponse)
 async def generate_content(request: SEORequest):
