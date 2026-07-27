@@ -3,7 +3,8 @@
   "framework": "fastapi",
   "functions": {
     "src/api/app.py": {
-      "excludeFiles": "src/static/**"
+      "maxDuration": 60,
+      "memory": 1024
     }
   }
 }
