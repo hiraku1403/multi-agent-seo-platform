@@ -14,7 +14,7 @@ document.getElementById('generateBtn').addEventListener('click', async () => {
     try {
         // 🔥 CORREÇÃO: Remover /api/ do caminho
         const response = await fetch('/generate-content', {
-            method: 'POST',
+            method: 'POST', 
             headers: {
                 'Content-Type': 'application/json',
             },
