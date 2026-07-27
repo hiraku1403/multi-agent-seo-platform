@@ -53,7 +53,7 @@ async def run_crew_in_background(job_id: str, topic: str):
 async def root():
     current_dir = os.path.dirname(os.path.abspath(__file__))
     project_root = os.path.dirname(os.path.dirname(current_dir))
-    html_path = os.path.join(project_root, "frontend", "public", "index.html")
+    html_path = os.path.join(project_root, "src", "static", "index.html")
     if os.path.exists(html_path):
         return FileResponse(html_path)
     return {"message": "🚀 Multi-Agent SEO Platform API", "status": "online"}
