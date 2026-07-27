@@ -1,11 +1,11 @@
-from crewai import Agent
+from crewai import Agent, LLM
 from langchain_openai import ChatOpenAI
 import os
 
 class WriterAgent:
     def __init__(self):
         self.llm = ChatOpenAI(
-            model="gpt-4-turbo-preview",
+            model="gpt-4o-mini",
             temperature=0.8,
             api_key=os.getenv("OPENAI_API_KEY")
         )
