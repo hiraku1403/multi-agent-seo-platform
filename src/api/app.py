@@ -1,8 +1,14 @@
 import os
-# FORÇA O CREWAI A USAR A PASTA TEMPORÁRIA COM PERMISSÃO DE ESCRITA DA VERCEL
+# REDIRECIONAMENTO DE TODAS AS PASTAS DE CACHE E CONFIGURAÇÃO PARA O DIRETÓRIO /TMP
 os.environ["CREWAI_STORAGE_DIR"] = "/tmp/crewai"
 os.environ["XDG_DATA_HOME"] = "/tmp/.local/share"
 os.environ["XDG_CACHE_HOME"] = "/tmp/.cache"
+os.environ["XDG_CONFIG_HOME"] = "/tmp/.config"
+os.environ["HOME"] = "/tmp"  # Engana as bibliotecas que tentam acessar o /home
+os.environ["OPENAI_API_BASE"] = "https://openai.com" 
+os.environ["HF_HOME"] = "/tmp/huggingface"
+os.environ["NUMEXPR_MAX_THREADS"] = "1"
+
 
 from fastapi import FastAPI, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
