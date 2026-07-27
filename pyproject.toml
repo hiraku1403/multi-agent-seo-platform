@@ -1,2 +1,9 @@
+[project]
+name = "multi-agent-seo-platform"
+version = "0.1.0"
+description = "Plataforma de SEO Multi-Agente"
+requires-python = ">=3.12"
+dependencies = []
+
 [tool.vercel]
 entrypoint = "src.api.app:app"
