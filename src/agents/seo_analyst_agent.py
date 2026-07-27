@@ -22,7 +22,7 @@ class SEOAnalystAgent:
                 KeywordAnalysisTool(),
                 CompetitorAnalysisTool()
             ],
-           llm=LLM(model="gemini-2.5-flash"),
+           llm=LLM(model="gemini/gemini-2.5-flash"),
             verbose=True,
             allow_delegation=True
         )

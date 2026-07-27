@@ -17,7 +17,7 @@ class WriterAgent:
             backstory="""Você é um redator criativo com expertise em copywriting.
             Escreve artigos que combinam otimização para SEO com storytelling envolvente.
             Sabe adaptar o tom de voz para diferentes nichos e audiências.""",
-            llm=LLM(model="gemini-2.5-flash"),
+            llm=LLM(model="gemini/gemini-2.5-flash"),
             verbose=True,
             allow_delegation=True
         )
