@@ -1,21 +1,23 @@
 import os
+# FORÇA O CREWAI A USAR A PASTA TEMPORÁRIA COM PERMISSÃO DE ESCRITA DA VERCEL
 os.environ["CREWAI_STORAGE_DIR"] = "/tmp/crewai"
 os.environ["XDG_DATA_HOME"] = "/tmp/.local/share"
 os.environ["XDG_CACHE_HOME"] = "/tmp/.cache"
 
 from fastapi import FastAPI, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 from src.crew.seo_crew import SEOCrew
 import asyncio
-import os
 from dotenv import load_dotenv
 
 load_dotenv()
 
 app = FastAPI(title="Multi-Agent SEO Platform", version="1.0.0")
 
+# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -23,6 +25,14 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# DESCUBRA O CAMINHO DA PASTA STATIC E ADICIONE O MOUNT (CORREÇÃO DO 404)
+current_dir = os.path.dirname(os.path.abspath(__file__)) # src/api
+project_root = os.path.dirname(current_dir) # src
+static_dir = os.path.join(project_root, "static")
+
+if os.path.exists(static_dir):
+    app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 # Banco de dados temporário em memória para salvar os resultados
 jobs = {}
@@ -40,7 +50,6 @@ class SEOResponse(BaseModel):
     final_article: str = None
     error: str = None
 
-# Função que rodará em segundo plano sem travar a requisição
 async def run_crew_in_background(job_id: str, topic: str):
     try:
         crew = SEOCrew()
@@ -49,26 +58,20 @@ async def run_crew_in_background(job_id: str, topic: str):
     except Exception as e:
         jobs[job_id] = {"success": False, "error": str(e), "topic": topic}
 
-@app.get("/")
+@app.get("/", response_class=HTMLResponse)
 async def root():
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    project_root = os.path.dirname(os.path.dirname(current_dir))
-    html_path = os.path.join(project_root, "src", "static", "index.html")
-    if os.path.exists(html_path):
-        return FileResponse(html_path)
-    return {"message": "🚀 Multi-Agent SEO Platform API", "status": "online"}
+    html_path = os.path.join(static_dir, "index.html")
+    try:
+        with open(html_path, "r", encoding="utf-8") as f:
+            return HTMLResponse(content=f.read())
+    except Exception as e:
+        return HTMLResponse(content=f"<h1>Erro ao carregar a interface</h1><p>O arquivo nao foi localizado em: {html_path}</p>")
 
 @app.post("/api/generate-content")
 async def generate_content(request: SEORequest, background_tasks: BackgroundTasks):
-    # Cria um ID único usando o próprio tópico limpo
     job_id = "".join(e for e in request.topic if e.isalnum()).lower()
-    
-    # Inicializa o status do Job
     jobs[job_id] = {"success": False, "status": "processing", "topic": request.topic}
-    
-    # Dispara os agentes em segundo plano e libera a requisição HTTP imediatamente
     background_tasks.add_task(run_crew_in_background, job_id, request.topic)
-    
     return {"job_id": job_id, "status": "processing"}
 
 @app.get("/api/job/{job_id}", response_model=SEOResponse)
