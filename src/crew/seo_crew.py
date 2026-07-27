@@ -1,5 +1,4 @@
 from crewai import Crew, Process
-from crewai import LLM
 from src.agents.researcher_agent import ResearcherAgent
 from src.agents.seo_analyst_agent import SEOAnalystAgent
 from src.agents.writer_agent import WriterAgent
@@ -12,27 +11,22 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-from crewai import LLM
-
-# ... (Mantenha suas importações iguais)
-
 class SEOCrew:
     def __init__(self):
-        # Volte a inicialização ao formato original sem passar o argumento 'llm'
+        # Inicializa os agentes de forma limpa sem passar argumentos de LLM manuais
         self.researcher = ResearcherAgent().create_agent()
         self.seo_analyst = SEOAnalystAgent().create_agent()
         self.writer = WriterAgent().create_agent()
         self.editor = EditorAgent().create_agent()
-
-    
+        
     async def run_seo_workflow(self, topic: str) -> Dict[str, Any]:
         """
-        Executa o fluxo completo de otimização SEO de forma assíncrona
+        Executa o fluxo completo de otimização SEO de forma assíncrona usando o Gemini
         """
         try:
             logger.info(f"Iniciando análise SEO para: {topic}")
             
-            # 1. Pesquisa (Adicionado await e .kickoff_async())
+            # 1. Pesquisa
             research_task = SEOTasks.research_task(self.researcher, topic)
             research_crew = Crew(
                 agents=[self.researcher],
@@ -40,7 +34,6 @@ class SEOCrew:
                 process=Process.sequential,
                 verbose=True
             )
-            # Se .kickoff_async() der erro de atributo, tente .akickoff()
             research_output = await research_crew.kickoff_async()
             research_result = research_output.raw
             logger.info("✅ Pesquisa concluída")
