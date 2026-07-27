@@ -1,36 +1,15 @@
 {
-    "version": 2,
-    "builds": [
-        {
-            "src": "src/api/app.py",
-            "use": "@vercel/python",
-            "config": {
-                "maxDuration": 60
-            }
-        },
-        {
-            "src": "frontend/public/**",
-            "use": "@vercel/static"
-        }
-    ],
-    "routes": [
-        {
-            "src": "/api/(.*)",
-            "dest": "src/api/app.py"
-        },
-        {
-            "src": "/generate-content",
-            "dest": "src/api/app.py"
-        },
-        {
-            "src": "/(.*)",
-            "dest": "frontend/public/$1"
-        }
-    ],
-    "functions": {
-        "src/api/app.py": {
-            "memory": 1024,
-            "maxDuration": 60
-        }
+  "$schema": "https://vercel.sh",
+  "framework": "fastapi",
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "src/api/app.py"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "frontend/public/$1"
     }
+  ]
 }
