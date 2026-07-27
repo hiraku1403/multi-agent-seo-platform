@@ -9,7 +9,7 @@ os.environ["NUMEXPR_MAX_THREADS"] = "1"
 
 
 # FORÇA O CREWAI E O LITELLM A USARE M O MODELO CORRETO MODERNO
-os.environ["OPENAI_MODEL_NAME"] = "gpt-4o-mini"
+os.environ["OPENAI_MODEL_NAME"] = "gemini/gemini-1.5-flash"
 
 
 from fastapi import FastAPI, HTTPException, BackgroundTasks

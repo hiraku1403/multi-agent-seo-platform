@@ -1,4 +1,4 @@
-from crewai import Agent
+from crewai import Agent, LLM
 from langchain_openai import ChatOpenAI
 import os
 
@@ -17,7 +17,7 @@ class EditorAgent:
             backstory="""Você é um editor experiente com olhar crítico para qualidade.
             Especialista em avaliação de conteúdo, correção gramatical e melhoria de estilo.
             Aplica critérios rigorosos de qualidade em cada revisão.""",
-            llm=self.llm,
+            llm=LLM(model="gemini/gemini-1.5-flash"),
             verbose=True,
             allow_delegation=True
         )

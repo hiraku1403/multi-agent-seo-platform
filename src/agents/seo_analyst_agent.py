@@ -1,4 +1,4 @@
-from crewai import Agent
+from crewai import Agent, LLM
 from langchain_openai import ChatOpenAI
 from src.tools.seo_tools import KeywordAnalysisTool, CompetitorAnalysisTool
 import os
@@ -22,7 +22,7 @@ class SEOAnalystAgent:
                 KeywordAnalysisTool(),
                 CompetitorAnalysisTool()
             ],
-            llm=self.llm,
+           llm=LLM(model="gemini/gemini-1.5-flash"),
             verbose=True,
             allow_delegation=True
         )
