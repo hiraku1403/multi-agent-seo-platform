@@ -17,15 +17,15 @@ class SEOCrew:
         self.seo_analyst = SEOAnalystAgent().create_agent()
         self.writer = WriterAgent().create_agent()
         self.editor = EditorAgent().create_agent()
-        
+    
     async def run_seo_workflow(self, topic: str) -> Dict[str, Any]:
         """
-        Executa o fluxo completo de otimização SEO
+        Executa o fluxo completo de otimização SEO de forma assíncrona
         """
         try:
             logger.info(f"Iniciando análise SEO para: {topic}")
             
-            # 1. Pesquisa
+            # 1. Pesquisa (Adicionado await e .kickoff_async())
             research_task = SEOTasks.research_task(self.researcher, topic)
             research_crew = Crew(
                 agents=[self.researcher],
@@ -33,7 +33,9 @@ class SEOCrew:
                 process=Process.sequential,
                 verbose=True
             )
-            research_result = research_crew.kickoff()
+            # Se .kickoff_async() der erro de atributo, tente .akickoff()
+            research_output = await research_crew.kickoff_async()
+            research_result = research_output.raw
             logger.info("✅ Pesquisa concluída")
             
             # 2. Análise SEO
@@ -44,7 +46,8 @@ class SEOCrew:
                 process=Process.sequential,
                 verbose=True
             )
-            seo_analysis = seo_crew.kickoff()
+            seo_output = await seo_crew.kickoff_async()
+            seo_analysis = seo_output.raw
             logger.info("✅ Análise SEO concluída")
             
             # 3. Escrita
@@ -55,7 +58,8 @@ class SEOCrew:
                 process=Process.sequential,
                 verbose=True
             )
-            article = writing_crew.kickoff()
+            writing_output = await writing_crew.kickoff_async()
+            article = writing_output.raw
             logger.info("✅ Artigo escrito")
             
             # 4. Edição
@@ -66,7 +70,8 @@ class SEOCrew:
                 process=Process.sequential,
                 verbose=True
             )
-            final_article = editing_crew.kickoff()
+            editing_output = await editing_crew.kickoff_async()
+            final_article = editing_output.raw
             logger.info("✅ Artigo revisado")
             
             return {
