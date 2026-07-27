@@ -1,4 +1,9 @@
 {
   "$schema": "https://vercel.sh",
-  "framework": "fastapi"
+  "framework": "fastapi",
+  "functions": {
+    "src/api/app.py": {
+      "excludeFiles": "src/static/**"
+    }
+  }
 }
