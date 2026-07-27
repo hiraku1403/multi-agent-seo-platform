@@ -2,7 +2,7 @@
     "version": 2,
     "builds": [
         {
-            "src": "api/app.py",
+            "src": "src/api/app.py",
             "use": "@vercel/python"
         },
         {
@@ -13,17 +13,10 @@
     "routes": [
         {
             "src": "/api/(.*)",
-            "dest": "api/app.py"
+            "dest": "src/api/app.py"
         },
         {
             "src": "/(.*)",
             "dest": "frontend/public/$1"
         }
-        }
-    ],
-    "env": {
-        "OPENAI_API_KEY": "@openai_api_key",
-        "TAVILY_API_KEY": "@tavily_api_key",
-        "SERPER_API_KEY": "@serper_api_key"
-    }
-}
+    ]
