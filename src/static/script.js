@@ -13,7 +13,8 @@ document.getElementById('generateBtn').addEventListener('click', async () => {
     
     try {
         // 🔥 CORREÇÃO: Remover /api/ do caminho 1
-        const response = await fetch('src/api/generate-content', {
+        const response = await fetch('/api/generate-content', { //  Correto
+
             method: 'POST',  
             headers: {
                 'Content-Type': 'application/json',
@@ -72,7 +73,7 @@ document.getElementById('topicInput').addEventListener('keypress', (e) => {
 // Função para testar a API
 async function testAPI() {
     try {
-        const response = await fetch('/');
+        const response = await fetch('/api/health'); //  Correto
         const data = await response.json();
         console.log('API Status:', data);
         return data;
@@ -85,7 +86,7 @@ async function testAPI() {
 // Testar API quando a página carregar
 document.addEventListener('DOMContentLoaded', async () => {
     const status = await testAPI();
-    if (status && status.status === 'online') {
+    if (status && status.status === 'healthy')  {
         console.log('✅ API está online!');
     } else {
         console.warn('⚠️ API pode estar offline. Verifique o console.');
