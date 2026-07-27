@@ -1,13 +1,14 @@
 import os
-# REDIRECIONAMENTO DE TODAS AS PASTAS DE CACHE E CONFIGURAÇÃO PARA O DIRETÓRIO /TMP
+# CONFIGURAÇÃO DE PASTAS DE CACHE E DIRETÓRIO HOME PERMITIDO NA VERCEL
 os.environ["CREWAI_STORAGE_DIR"] = "/tmp/crewai"
 os.environ["XDG_DATA_HOME"] = "/tmp/.local/share"
 os.environ["XDG_CACHE_HOME"] = "/tmp/.cache"
 os.environ["XDG_CONFIG_HOME"] = "/tmp/.config"
-os.environ["HOME"] = "/tmp"  # Engana as bibliotecas que tentam acessar o /home
-os.environ["OPENAI_API_BASE"] = "https://openai.com" 
-os.environ["HF_HOME"] = "/tmp/huggingface"
+os.environ["HOME"] = "/tmp"  # Resolve definitivamente o erro Read-only file system
 os.environ["NUMEXPR_MAX_THREADS"] = "1"
+
+# REMOVIDO: A linha os.environ["OPENAI_API_BASE"] foi excluída para o LiteLLM usar o padrão correto nativo.
+
 
 
 from fastapi import FastAPI, HTTPException, BackgroundTasks
