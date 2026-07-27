@@ -7,6 +7,7 @@ os.environ["XDG_CACHE_HOME"] = "/tmp/.cache"
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 from src.crew.seo_crew import SEOCrew
 import asyncio
@@ -14,6 +15,9 @@ import uvicorn
 from dotenv import load_dotenv
 
 load_dotenv()
+
+
+
 
 app = FastAPI(title="Multi-Agent SEO Platform", version="1.0.0")
 
@@ -38,23 +42,18 @@ class SEOResponse(BaseModel):
     final_article: str = None
     error: str = None
 
-@app.get("/")
+@app.get("/", response_class=HTMLResponse)
 async def root():
-    # Pega a pasta onde o app.py está (src/api)
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    # Sobe dois níveis para chegar na raiz real do projeto
-    project_root = os.path.dirname(os.path.dirname(current_dir))
-    # Constrói o caminho absoluto exato até o arquivo HTML
+    # Caminho calculado subindo os níveis a partir do arquivo app.py
+    current_dir = os.path.dirname(os.path.abspath(__file__)) # src/api
+    project_root = os.path.dirname(os.path.dirname(current_dir)) # Raiz do Projeto
     html_path = os.path.join(project_root, "frontend", "public", "index.html")
     
-    if os.path.exists(html_path):
-        return FileResponse(html_path)
-        
-    return {
-        "message": "🚀 Multi-Agent SEO Platform API", 
-        "status": "online", 
-        "info": f"index.html nao encontrado no caminho: {html_path}"
-    }
+    try:
+        with open(html_path, "r", encoding="utf-8") as f:
+            return HTMLResponse(content=f.read())
+    except Exception as e:
+        return HTMLResponse(content=f"<h1>Erro ao carregar index.html</h1><p>{str(e)}</p>")
 
 @app.post("/api/generate-content", response_model=SEOResponse)
 async def generate_content(request: SEORequest):
