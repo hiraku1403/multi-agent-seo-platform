@@ -43,7 +43,7 @@ class SEOResponse(BaseModel):
 async def root():
     return {"message": "🚀 Multi-Agent SEO Platform API", "status": "online"}
 
-@app.post("/generate-content", response_model=SEOResponse)
+@app.post("/api/generate-content", response_model=SEOResponse)
 async def generate_content(request: SEORequest):
     """
     Gera conteúdo otimizado para SEO usando sistema multi-agente
