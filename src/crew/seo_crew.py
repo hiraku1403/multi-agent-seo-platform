@@ -1,4 +1,5 @@
 from crewai import Crew, Process
+from crewai import LLM
 from src.agents.researcher_agent import ResearcherAgent
 from src.agents.seo_analyst_agent import SEOAnalystAgent
 from src.agents.writer_agent import WriterAgent
@@ -11,12 +12,24 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+from crewai import LLM
+
+# ... (Mantenha suas importações iguais)
+
 class SEOCrew:
     def __init__(self):
-        self.researcher = ResearcherAgent().create_agent()
-        self.seo_analyst = SEOAnalystAgent().create_agent()
-        self.writer = WriterAgent().create_agent()
-        self.editor = EditorAgent().create_agent()
+        # Cria a configuração do modelo de forma explícita
+        self.openai_llm = LLM(
+            model="openai/gpt-4o-mini",
+            temperature=0.7
+        )
+        
+        # Passa a configuração para a criação de cada agente
+        self.researcher = ResearcherAgent().create_agent(llm=self.openai_llm)
+        self.seo_analyst = SEOAnalystAgent().create_agent(llm=self.openai_llm)
+        self.writer = WriterAgent().create_agent(llm=self.openai_llm)
+        self.editor = EditorAgent().create_agent(llm=self.openai_llm)
+
     
     async def run_seo_workflow(self, topic: str) -> Dict[str, Any]:
         """
