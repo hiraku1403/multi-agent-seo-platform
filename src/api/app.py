@@ -43,11 +43,23 @@ class SEOResponse(BaseModel):
 
 @app.get("/")
 async def root():
-    # Caminho correto considerando a estrutura a partir da raiz do projeto
-    html_path = os.path.join(os.getcwd(), "frontend", "public", "index.html")
+    # 1. Pega a pasta onde o app.py está (src/api)
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    # 2. Sobe dois níveis para chegar na raiz real do projeto (multi-agent-seo-platform)
+    project_root = os.path.dirname(os.path.dirname(current_dir))
+    
+    # 3. Constrói o caminho absoluto exato até o arquivo HTML
+    html_path = os.path.join(project_root, "frontend", "public", "index.html")
+    
     if os.path.exists(html_path):
         return FileResponse(html_path)
-    return {"message": "🚀 Multi-Agent SEO Platform API", "status": "online", "info": "index.html nao encontrado"}
+        
+    return {
+        "message": "🚀 Multi-Agent SEO Platform API", 
+        "status": "online", 
+        "info": f"index.html nao encontrado no caminho: {html_path}"
+    }
 
 @app.post("/api/generate-content", response_model=SEOResponse)
 async def generate_content(request: SEORequest):
