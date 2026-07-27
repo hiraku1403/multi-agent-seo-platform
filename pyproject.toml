@@ -2,7 +2,7 @@
 name = "multi-agent-seo-platform"
 version = "0.1.0"
 description = "Plataforma de SEO Multi-Agente"
-requires-python = ">=3.12"
+requires-python = "==3.11.*"
 dependencies = [
     "crewai==0.5.0",
     "langchain==0.1.0",
