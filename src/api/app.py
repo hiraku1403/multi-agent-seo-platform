@@ -1,12 +1,11 @@
 import os
-# Redirecionamento de permissão do CrewAI
+# FORÇA O CREWAI A USAR A PASTA TEMPORÁRIA COM PERMISSÃO DE ESCRITA DA VERCEL
 os.environ["CREWAI_STORAGE_DIR"] = "/tmp/crewai"
 os.environ["XDG_DATA_HOME"] = "/tmp/.local/share"
 os.environ["XDG_CACHE_HOME"] = "/tmp/.cache"
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from src.crew.seo_crew import SEOCrew
@@ -27,20 +26,35 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# DESCUBRA O CAMINHO DA PASTA STATIC AUTOMATICAMENTE
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) # Sobe para /src
-STATIC_DIR = os.path.join(BASE_DIR, "static")
+class SEORequest(BaseModel):
+    topic: str
 
-# MONTA A PASTA DE ESTRUTURAS ESTÁTICAS (ISSO OBRIGA A VERCEL A INCLUÍ-LA NO BUILD)
-if os.path.exists(STATIC_DIR):
-    app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+class SEOResponse(BaseModel):
+    success: bool
+    topic: str
+    research: str = None
+    seo_analysis: str = None
+    article: str = None
+    final_article: str = None
+    error: str = None
 
 @app.get("/")
 async def root():
-    html_file = os.path.join(STATIC_DIR, "index.html")
-    if os.path.exists(html_file):
-        return FileResponse(html_file)
-    return {"message": "🚀 Multi-Agent SEO Platform API", "status": "online", "info": "index.html nao encontrado na pasta static"}
+    # Pega a pasta onde o app.py está (src/api)
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    # Sobe dois níveis para chegar na raiz real do projeto
+    project_root = os.path.dirname(os.path.dirname(current_dir))
+    # Constrói o caminho absoluto exato até o arquivo HTML
+    html_path = os.path.join(project_root, "frontend", "public", "index.html")
+    
+    if os.path.exists(html_path):
+        return FileResponse(html_path)
+        
+    return {
+        "message": "🚀 Multi-Agent SEO Platform API", 
+        "status": "online", 
+        "info": f"index.html nao encontrado no caminho: {html_path}"
+    }
 
 @app.post("/api/generate-content", response_model=SEOResponse)
 async def generate_content(request: SEORequest):
@@ -66,7 +80,7 @@ async def generate_content(request: SEORequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/health")
+@app.get("/api/health")
 async def health_check():
     return {"status": "healthy"}
 
