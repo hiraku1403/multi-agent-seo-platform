@@ -1,13 +1,14 @@
-from crewai import Agent, LLM
-from langchain_openai import ChatOpenAI
+from crewai import Agent
+
 import os
 
 class EditorAgent:
-    def __init__(self):
-        self.llm = ChatOpenAI(
-            model="gpt-4o-mini",
-            temperature=0.2,
-            api_key=os.getenv("OPENAI_API_KEY")
+    def create_agent(self) -> Agent:
+        return Agent(
+            role="Editor de Conteúdo",
+            goal="Revisar, corrigir e refinar o artigo final para máxima qualidade",
+            backstory="Você é um editor rigoroso que garante perfeição gramatical, tom correto e legibilidade perfeita.",
+            verbose=True
         )
         
     def create_agent(self):

@@ -1,13 +1,16 @@
-from crewai import Agent, LLM
-from langchain_openai import ChatOpenAI
+from crewai import Agent
+
 import os
 
+
+
 class WriterAgent:
-    def __init__(self):
-        self.llm = ChatOpenAI(
-            model="gpt-4o-mini",
-            temperature=0.8,
-            api_key=os.getenv("OPENAI_API_KEY")
+    def create_agent(self) -> Agent:
+        return Agent(
+            role="Escritor de Conteúdo",
+            goal="Escrever artigos engajadores e otimizados para SEO baseado na análise",
+            backstory="Você é um redator profissional focado em criar conteúdo rico, informativo e fluído.",
+            verbose=True
         )
         
     def create_agent(self):

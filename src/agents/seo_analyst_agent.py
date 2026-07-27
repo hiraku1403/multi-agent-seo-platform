@@ -1,14 +1,15 @@
-from crewai import Agent, LLM
-from langchain_openai import ChatOpenAI
+from crewai import Agent
+
 from src.tools.seo_tools import KeywordAnalysisTool, CompetitorAnalysisTool
 import os
 
 class SEOAnalystAgent:
-    def __init__(self):
-        self.llm = ChatOpenAI(
-            model="gpt-4o-mini",
-            temperature=0.3,
-            api_key=os.getenv("OPENAI_API_KEY")
+    def create_agent(self) -> Agent:
+        return Agent(
+            role="Analista de SEO",
+            goal="Analisar dados de palavras-chave e estruturar a estratégia de SEO",
+            backstory="Você é um analista sênior focado em otimização de mecanismos de busca e intenção do usuário.",
+            verbose=True
         )
         
     def create_agent(self):
