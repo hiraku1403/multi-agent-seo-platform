@@ -3,7 +3,10 @@
     "builds": [
         {
             "src": "src/api/app.py",
-            "use": "@vercel/python"
+            "use": "@vercel/python",
+            "config": {
+                "maxDuration": 60
+            }
         },
         {
             "src": "frontend/public/**",
@@ -19,6 +22,11 @@
             "src": "/(.*)",
             "dest": "frontend/public/$1"
         }
-        
-    ]
+    ],
+    "functions": {
+        "src/api/app.py": {
+            "memory": 1024,
+            "maxDuration": 60
+        }
+    }
 }
