@@ -8,7 +8,7 @@ os.environ["HOME"] = "/tmp"
 os.environ["NUMEXPR_MAX_THREADS"] = "1"
 
 # CONFIGURAÇÃO DO GEMINI
-os.environ["OPENAI_MODEL_NAME"] = "gemini/gemini-1.5-flash"
+os.environ["OPENAI_MODEL_NAME"] = "gemini/gemini-2.5-flash"
 
 # CHAVE FALSA PARA ENGANAR A VALIDAÇÃO DO CREWAI (RESOLVE O SEU ERRO)
 os.environ["OPENAI_API_KEY"] = "fake-key-just-to-bypass-validation"

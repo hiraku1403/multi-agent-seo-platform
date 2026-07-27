@@ -22,7 +22,7 @@ class ResearcherAgent:
                 TavilySearchTool(),
                 SerperSearchTool()
             ],
-            llm=LLM(model="gemini/gemini-1.5-flash"),
+            llm=LLM(model="gemini-2.5-flash"),
             verbose=True,
             allow_delegation=True,
             max_iter=5
