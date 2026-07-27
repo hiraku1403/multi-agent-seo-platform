@@ -1,8 +1,8 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "$schema": "https://vercel.sh",
   "functions": {
-    "src/api/app.py": {
-      "runtime": "@vercel/python"
+    "api/main.py": {
+      "runtime": "@vercel/python@3.12"
     }
   },
   "rewrites": [
@@ -12,4 +12,3 @@
     }
   ]
 }
-
