@@ -1,17 +1,14 @@
-from crewai import Agent, LLM
+from crewai import Agent
 from langchain_openai import ChatOpenAI
 from src.tools.search_tools import TavilySearchTool, SerperSearchTool
 import os
 
 class ResearcherAgent:
-    def create_agent(self) -> Agent:
-        return Agent(
-            role="Pesquisador de SEO",
-            goal="Buscar tendências e dados do mercado para o tópico fornecido",
-            backstory="Você é um especialista em mineração de dados e análise de tendências de busca.",
-            # Força o uso do modelo moderno e acessível
-            llm=LLM(model="openai/gpt-4o-mini"),
-            verbose=True
+    def __init__(self):
+        self.llm = ChatOpenAI(
+            model="gpt-4o-mini",
+            temperature=0.7,
+            api_key=os.getenv("OPENAI_API_KEY")
         )
         
     def create_agent(self):

@@ -1,4 +1,4 @@
-from crewai import Agent, LLM
+from crewai import Agent
 from langchain_openai import ChatOpenAI
 from src.tools.seo_tools import KeywordAnalysisTool, CompetitorAnalysisTool
 import os

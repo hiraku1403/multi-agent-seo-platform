@@ -1,4 +1,4 @@
-from crewai import Agent, LLM
+from crewai import Agent
 from langchain_openai import ChatOpenAI
 import os
 
