@@ -8,11 +8,13 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from src.crew.seo_crew import SEOCrew
 import asyncio
 import uvicorn
 from dotenv import load_dotenv
+
 
 load_dotenv()
 
@@ -42,18 +44,22 @@ class SEOResponse(BaseModel):
     final_article: str = None
     error: str = None
 
+    # Encontra a pasta static ao lado da pasta api
+current_dir = os.path.dirname(os.path.abspath(__file__)) # src/api
+project_root = os.path.dirname(os.path.dirname(current_dir)) # Raiz
+static_dir = os.path.join(project_root, "src", "static")
+
+if os.path.exists(static_dir):
+    app.mount("/static", StaticFiles(directory=static_dir), name="static")
+
 @app.get("/", response_class=HTMLResponse)
 async def root():
-    # Caminho calculado subindo os níveis a partir do arquivo app.py
-    current_dir = os.path.dirname(os.path.abspath(__file__)) # src/api
-    project_root = os.path.dirname(os.path.dirname(current_dir)) # Raiz do Projeto
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(os.path.dirname(current_dir))
     html_path = os.path.join(project_root, "src", "static", "index.html")
     
-    try:
-        with open(html_path, "r", encoding="utf-8") as f:
-            return HTMLResponse(content=f.read())
-    except Exception as e:
-        return HTMLResponse(content=f"<h1>Erro ao carregar index.html</h1><p>{str(e)}</p>")
+    with open(html_path, "r", encoding="utf-8") as f:
+        return HTMLResponse(content=f.read())
 
 @app.post("/api/generate-content", response_model=SEOResponse)
 async def generate_content(request: SEORequest):
