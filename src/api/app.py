@@ -1,13 +1,20 @@
+import os
+# FORÇA O CREWAI A USAR A PASTA TEMPORÁRIA COM PERMISSÃO DE ESCRITA DA VERCEL
+os.environ["CREWAI_STORAGE_DIR"] = "/tmp/crewai"
+os.environ["XDG_DATA_HOME"] = "/tmp/.local/share"
+os.environ["XDG_CACHE_HOME"] = "/tmp/.cache"
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from src.crew.seo_crew import SEOCrew
 import asyncio
 import uvicorn
-import os
 from dotenv import load_dotenv
 
 load_dotenv()
+# ... resto do seu código do app.py continua igual
+
 
 app = FastAPI(title="Multi-Agent SEO Platform", version="1.0.0")
 
