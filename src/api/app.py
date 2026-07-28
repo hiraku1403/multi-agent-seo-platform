@@ -8,7 +8,7 @@ os.environ["HOME"] = "/tmp"
 os.environ["NUMEXPR_MAX_THREADS"] = "1"
 
 # CONFIGURAÇÃO DO GEMINI 2.5 FLASH
-os.environ["OPENAI_MODEL_NAME"] = "gemini/gemini-2.5-flash"
+os.environ["OPENAI_MODEL_NAME"] = "gemini/gemini-2.5-flash-8b"
 os.environ["GEMINI_API_KEY"] = os.environ.get("GEMINI_API_KEY", "") # Lê do painel Vercel
 
 # CHAVE FALSA PARA ENGANAR A VALIDAÇÃO DO CREWAI
