@@ -61,7 +61,7 @@ document.getElementById('generateBtn').addEventListener('click', async () => {
                 document.getElementById('loading').classList.add('hidden');
                 document.getElementById('generateBtn').disabled = false;
             }
-        }, 15000); // Pergunta a cada 5 segundos
+        }, 25000 ); // Pergunta a cada 5 segundos
         
     } catch (error) {
         console.error('Erro completo:', error);

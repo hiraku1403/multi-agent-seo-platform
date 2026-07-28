@@ -1,8 +1,6 @@
 from crewai import Crew, Process
 from src.agents.researcher_agent import ResearcherAgent
-from src.agents.seo_analyst_agent import SEOAnalystAgent
 from src.agents.writer_agent import WriterAgent
-from src.agents.editor_agent import EditorAgent
 from src.tasks.tasks import SEOTasks
 import asyncio
 from typing import Dict, Any
@@ -13,59 +11,40 @@ logger = logging.getLogger(__name__)
 
 class SEOCrew:
     def __init__(self):
-        # Inicializa os agentes de forma limpa sem passar argumentos de LLM manuais
+        # Usamos apenas 2 agentes agora para economizar tokens
         self.researcher = ResearcherAgent().create_agent()
-        self.seo_analyst = SEOAnalystAgent().create_agent()
         self.writer = WriterAgent().create_agent()
-        self.editor = EditorAgent().create_agent()
         
     async def run_seo_workflow(self, topic: str) -> Dict[str, Any]:
         try:
             logger.info(f"Iniciando análise SEO para: {topic}")
             
-            # 1. Pesquisa
+            # 1. Pesquisa e Análise de Palavras-Chave Unidas
             research_task = SEOTasks.research_task(self.researcher, topic)
             research_crew = Crew(agents=[self.researcher], tasks=[research_task], verbose=True)
             research_output = await research_crew.kickoff_async()
             research_result = research_output.raw
-            logger.info("✅ Pesquisa concluída")
+            logger.info("✅ Pesquisa e Análise SEO concluídas")
             
-            # ESPERA 12 SEGUNDOS PARA NÃO ESTOURAR A COTA DO GEMINI
-            await asyncio.sleep(12)
+            # DELAY EXPANDIDO PARA LIMPAR O LIMITE DE MINUTOS DO GROQ
+            await asyncio.sleep(25)
             
-            # 2. Análise SEO
-            seo_task = SEOTasks.seo_analysis_task(self.seo_analyst, research_result)
-            seo_crew = Crew(agents=[self.seo_analyst], tasks=[seo_task], verbose=True)
-            seo_output = await seo_crew.kickoff_async()
-            seo_analysis = seo_output.raw
-            logger.info("✅ Análise SEO concluída")
-            
-            await asyncio.sleep(12)
-            
-            # 3. Escrita
-            writing_task = SEOTasks.writing_task(self.writer, seo_analysis)
+            # 2. Redação e Edição Final Unidas
+            writing_task = SEOTasks.writing_task(self.writer, research_result)
             writing_crew = Crew(agents=[self.writer], tasks=[writing_task], verbose=True)
             writing_output = await writing_crew.kickoff_async()
-            article = writing_output.raw
-            logger.info("✅ Artigo escrito")
-            
-            await asyncio.sleep(12)
-            
-            # 4. Edição
-            editing_task = SEOTasks.editing_task(self.editor, article)
-            editing_crew = Crew(agents=[self.editor], tasks=[editing_task], verbose=True)
-            editing_output = await editing_crew.kickoff_async()
-            final_article = editing_output.raw
-            logger.info("✅ Artigo revisado")
+            final_article = writing_output.raw
+            logger.info("✅ Artigo finalizado e editado")
             
             return {
                 "success": True,
                 "topic": topic,
                 "research": research_result,
-                "seo_analysis": seo_analysis,
-                "article": article,
+                "seo_analysis": "Integrada na etapa de pesquisa",
+                "article": final_article,
                 "final_article": final_article
             }
+            
         except Exception as e:
             logger.error(f"❌ Erro no workflow: {str(e)}")
             return {
