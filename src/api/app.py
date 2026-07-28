@@ -1,5 +1,5 @@
 import os
-# CONFIGURAÇÃO DE PASTAS DE CACHE E MODELO GLOBAL
+# PASTAS DE CACHE PERMITIDAS NA VERCEL
 os.environ["CREWAI_STORAGE_DIR"] = "/tmp/crewai"
 os.environ["XDG_DATA_HOME"] = "/tmp/.local/share"
 os.environ["XDG_CACHE_HOME"] = "/tmp/.cache"
@@ -7,16 +7,12 @@ os.environ["XDG_CONFIG_HOME"] = "/tmp/.config"
 os.environ["HOME"] = "/tmp"  
 os.environ["NUMEXPR_MAX_THREADS"] = "1"
 
-# CONFIGURAÇÃO DO GEMINI 2.5 FLASH
-# CONFIGURAÇÃO DO MODELO GRATUITO DO GROQ
-os.environ["OPENAI_MODEL_NAME"] = "groq/llama-3.1-8b-instant"
-os.environ["GROQ_API_KEY"] = os.environ.get("GROQ_API_KEY", "")
-# os.environ["GEMINI_API_KEY"] = os.environ.get("GEMINI_API_KEY", "") # Lê do painel Vercel
+# CONFIGURAÇÃO DO MODELO GRATUITO DO COHERE (ALTA COTA PARA TEXTOS LONGOS)
+os.environ["OPENAI_MODEL_NAME"] = "cohere/command-r-plus"
+os.environ["COHERE_API_KEY"] = os.environ.get("COHERE_API_KEY", "")
 
-# CHAVE FALSA PARA ENGANAR A VALIDAÇÃO DO CREWAI
-#os.environ["OPENAI_API_KEY"] = os.environ.get("OPENAI_API_KEY", "")
-# CHAVE FALSA APENAS PARA IGNORAR A VALIDAÇÃO DO CREWAI
-os.environ["OPENAI_API_KEY"] = "fake-key-bypass"
+# CHAVE FALSA APENAS PARA PASSAR PELA VALIDAÇÃO INICIAL DO CREWAI
+os.environ["OPENAI_API_KEY"] = "fake-key-bypass-validation"
 
 
 from fastapi import FastAPI, HTTPException, BackgroundTasks

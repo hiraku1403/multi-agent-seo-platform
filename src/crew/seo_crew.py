@@ -27,7 +27,7 @@ class SEOCrew:
             logger.info("✅ Pesquisa e Análise SEO concluídas")
             
             # DELAY EXPANDIDO PARA LIMPAR O LIMITE DE MINUTOS DO GROQ
-            await asyncio.sleep(25)
+            await asyncio.sleep(5)
             
             # 2. Redação e Edição Final Unidas
             writing_task = SEOTasks.writing_task(self.writer, research_result)
