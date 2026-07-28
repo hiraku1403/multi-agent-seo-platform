@@ -9,7 +9,7 @@ os.environ["NUMEXPR_MAX_THREADS"] = "1"
 
 # CONFIGURAÇÃO DO GEMINI 2.5 FLASH
 # CONFIGURAÇÃO DO MODELO GRATUITO DO GROQ
-os.environ["OPENAI_MODEL_NAME"] = "groq/llama3-70b-8192"
+os.environ["OPENAI_MODEL_NAME"] = "groq/llama-3.3-70b-versatile"
 os.environ["GROQ_API_KEY"] = os.environ.get("GROQ_API_KEY", "")
 # os.environ["GEMINI_API_KEY"] = os.environ.get("GEMINI_API_KEY", "") # Lê do painel Vercel
 
