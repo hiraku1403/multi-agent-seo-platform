@@ -12,7 +12,7 @@ os.environ["OPENAI_MODEL_NAME"] = "gpt-4o-mini"
 # os.environ["GEMINI_API_KEY"] = os.environ.get("GEMINI_API_KEY", "") # Lê do painel Vercel
 
 # CHAVE FALSA PARA ENGANAR A VALIDAÇÃO DO CREWAI
-os.environ["OPENAI_API_KEY"] = "fake-key-just-to-bypass-validation"
+os.environ["OPENAI_API_KEY"] = os.environ.get("OPENAI_API_KEY", "")
 
 
 
