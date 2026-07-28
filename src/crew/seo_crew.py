@@ -20,56 +20,40 @@ class SEOCrew:
         self.editor = EditorAgent().create_agent()
         
     async def run_seo_workflow(self, topic: str) -> Dict[str, Any]:
-        """
-        Executa o fluxo completo de otimização SEO de forma assíncrona usando o Gemini
-        """
         try:
             logger.info(f"Iniciando análise SEO para: {topic}")
             
             # 1. Pesquisa
             research_task = SEOTasks.research_task(self.researcher, topic)
-            research_crew = Crew(
-                agents=[self.researcher],
-                tasks=[research_task],
-                process=Process.sequential,
-                verbose=True
-            )
+            research_crew = Crew(agents=[self.researcher], tasks=[research_task], verbose=True)
             research_output = await research_crew.kickoff_async()
             research_result = research_output.raw
             logger.info("✅ Pesquisa concluída")
             
+            # ESPERA 12 SEGUNDOS PARA NÃO ESTOURAR A COTA DO GEMINI
+            await asyncio.sleep(12)
+            
             # 2. Análise SEO
             seo_task = SEOTasks.seo_analysis_task(self.seo_analyst, research_result)
-            seo_crew = Crew(
-                agents=[self.seo_analyst],
-                tasks=[seo_task],
-                process=Process.sequential,
-                verbose=True
-            )
+            seo_crew = Crew(agents=[self.seo_analyst], tasks=[seo_task], verbose=True)
             seo_output = await seo_crew.kickoff_async()
             seo_analysis = seo_output.raw
             logger.info("✅ Análise SEO concluída")
             
+            await asyncio.sleep(12)
+            
             # 3. Escrita
             writing_task = SEOTasks.writing_task(self.writer, seo_analysis)
-            writing_crew = Crew(
-                agents=[self.writer],
-                tasks=[writing_task],
-                process=Process.sequential,
-                verbose=True
-            )
+            writing_crew = Crew(agents=[self.writer], tasks=[writing_task], verbose=True)
             writing_output = await writing_crew.kickoff_async()
             article = writing_output.raw
             logger.info("✅ Artigo escrito")
             
+            await asyncio.sleep(12)
+            
             # 4. Edição
             editing_task = SEOTasks.editing_task(self.editor, article)
-            editing_crew = Crew(
-                agents=[self.editor],
-                tasks=[editing_task],
-                process=Process.sequential,
-                verbose=True
-            )
+            editing_crew = Crew(agents=[self.editor], tasks=[editing_task], verbose=True)
             editing_output = await editing_crew.kickoff_async()
             final_article = editing_output.raw
             logger.info("✅ Artigo revisado")
@@ -82,7 +66,6 @@ class SEOCrew:
                 "article": article,
                 "final_article": final_article
             }
-            
         except Exception as e:
             logger.error(f"❌ Erro no workflow: {str(e)}")
             return {
