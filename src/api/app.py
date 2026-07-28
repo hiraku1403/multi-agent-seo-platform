@@ -8,12 +8,15 @@ os.environ["HOME"] = "/tmp"
 os.environ["NUMEXPR_MAX_THREADS"] = "1"
 
 # CONFIGURAÇÃO DO GEMINI 2.5 FLASH
-os.environ["OPENAI_MODEL_NAME"] = "gpt-4o-mini"
+# CONFIGURAÇÃO DO MODELO GRATUITO DO GROQ
+os.environ["OPENAI_MODEL_NAME"] = "groq/llama3-70b-8192"
+os.environ["GROQ_API_KEY"] = os.environ.get("GROQ_API_KEY", "")
 # os.environ["GEMINI_API_KEY"] = os.environ.get("GEMINI_API_KEY", "") # Lê do painel Vercel
 
 # CHAVE FALSA PARA ENGANAR A VALIDAÇÃO DO CREWAI
-os.environ["OPENAI_API_KEY"] = os.environ.get("OPENAI_API_KEY", "")
-
+#os.environ["OPENAI_API_KEY"] = os.environ.get("OPENAI_API_KEY", "")
+# CHAVE FALSA APENAS PARA IGNORAR A VALIDAÇÃO DO CREWAI
+os.environ["OPENAI_API_KEY"] = "fake-key-bypass"
 
 
 from fastapi import FastAPI, HTTPException, BackgroundTasks
